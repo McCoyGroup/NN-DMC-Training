@@ -1,0 +1,19 @@
+#Intellij stuff
+.idea/
+*.iml
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*~
+
+# Molecular/Other Data
+*.npy
+*.npz
+*.txt
+*.xyz
+
+# Other
+*.jpg
+*.png
+*.pdf
