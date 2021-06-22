@@ -2,7 +2,10 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+
+# mpl use, Otherwise mcenv breaks
 mpl.use('Agg')
+
 from pyvibdmc.analysis import *
 from pyvibdmc.simulation_utilities import *
 from pyvibdmc.simulation_utilities.tensorflow_descriptors.cupy_distance import DistIt
@@ -15,15 +18,17 @@ from tensorflow.compat.v1 import InteractiveSession
 
 import cupy as cp
 
+# GPU and tensorflow settings 
 tf.keras.backend.set_floatx('float64')
 config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-#Load in training and validation set - Load in test data later
+# Load in data for analysis
 train = np.load("train_xy.npz")
 train_x = train['train_x']
 train_y = train['train_y']
+
 val = np.load("val_xy.npz")
 val_x = val['val_x']
 val_y = val['val_y']
@@ -32,46 +37,34 @@ test = np.load("test_xy.npz")
 test_x = test['test_x']
 test_y = test['test_y']
 
-#Transform your data to the appropriate descriptor
-eq_geom = np.load("/gscratch/ilahie/rjdiri/dmc/trimer_training/udu_bohr.npy")
-eq_geom = Constants.convert(eq_geom,'angstroms',to_AU=False)
-eq_geom = np.array([eq_geom,eq_geom])
-dist = DistIt(zs=[8,1,1]*3, sort_mat=False)
-
-req = dist.run(cp.array(eq_geom))[0]
-print(req)
-
-train_r = dist.run(cp.array(train_x))
-train_spf = tf.convert_to_tensor(cp.asnumpy((train_r - req) / train_r))
-
-val_r = dist.run(cp.array(val_x))
-val_spf = tf.convert_to_tensor(cp.asnumpy((val_r - req) / val_r))
-
-test_r = dist.run(cp.array(test_x))
-test_spf = tf.convert_to_tensor(cp.asnumpy((test_r - req) / test_r))
+#Transform your *_x data to the appropriate descriptor
+train_spf = ...
+val_spf = ...
+test_spf = tf.convert_to_tensor(...)
 
 #Define mae metric for monitoring training+validation while training
 def mae(y_true, y_pred):
     return K.mean(K.abs((y_true)-(y_pred)))
 
-model = tf.keras.models.load_model('trimer_model')
+# Load finished model
+model = tf.keras.models.load_model('...')
+
+# Predict based on energies
 v_train = model.predict(train_spf).flatten()
 v_val = model.predict(val_spf).flatten()
 v_test = model.predict(test_spf).flatten()
+
+# Convert to cm-1
 pred_v_train = (10**(v_train)-1)*1000
 pred_v_val = (10**(v_val)-1)*1000
 pred_v_test = (10**(v_test)-1)*1000
-print(train_y)
-print(pred_v_train)
-print(val_y)
-print(pred_v_val)
-print(test_y)
-print(pred_v_test)
 
+# MAE of different data sets
 print(mae(cp.asnumpy(train_y),cp.asnumpy(pred_v_train)))
 print(mae(cp.asnumpy(val_y),cp.asnumpy(pred_v_val)))
 print(mae(cp.asnumpy(test_y),cp.asnumpy(pred_v_test)))
 
+# Diagonal line plots
 plt.scatter(train_y,pred_v_train,label='training data')
 plt.legend()
 plt.xlabel('MB-pol E')

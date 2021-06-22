@@ -3,28 +3,34 @@ import pyvibdmc as dmc
 from pyvibdmc.simulation_utilities import *
 from pyvibdmc import potential_manager as pm
 
-pot_dir = '/gscratch/ilahie/rjdiri/Potentials/legacy_mbpol/'
-py_file = 'call_mbpol.py'
-pot_func = 'call_trimer_zero_e'
+# Specify potential 
 
+# pot_dir = '/gscratch/ilahie/rjdiri/Potentials/legacy_mbpol/'
+# py_file = 'call_mbpol.py'
+# pot_func = 'call_trimer_zero_e'
+
+# Set up potential manager
 tri_pot = pm.Potential(potential_function=pot_func,
                         python_file=py_file,
                         potential_directory=pot_dir,
                         num_cores=28)
 
-init_cds = np.expand_dims(np.load("udu_bohr.npy"),0)
+# Initialize coordinates, this is just the equilibrium
+# init_cds = np.expand_dims(np.load("udu_bohr.npy"),0)
 
 
 
 atoms = ['O','H','H'] * 3
 
+# Factors by which to multiply at each time step in the sim
 factors = np.array([1]*4000 + [0.99972538464]*3999)
 
-myDMC = dmc.DMC_Sim(sim_name="tri_dt10_0",
-                    output_folder="hex_training_data",
+
+myDMC = dmc.DMC_Sim(sim_name="example_name",
+                    output_folder="example_training_data",
                     weighting='discrete', #or 'continuous'. 'continuous' keeps the ensemble size constant.
                     num_walkers=20000, #number of geometries exploring the potential surface
-                    num_timesteps=8000, #how long the simulation will go. (num_timesteps * delta_t atomic units of time)
+                    num_timesteps=8000, 
                     equil_steps=500, #how long before we start collecting wave functions
                     chkpt_every=500, #checkpoint the simulation every "chkpt_every" time steps
                     wfn_every=7999, #collect a wave function every "wfn_every" time steps
