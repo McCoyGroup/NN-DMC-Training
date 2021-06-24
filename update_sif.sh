@@ -1,1 +1,1 @@
-singularity build --docker-login mcenv.sid docker://mccoygroup/mcenv:latest
+singularity build --docker-login mcenv.sif docker://mccoygroup/mcenv:latest
