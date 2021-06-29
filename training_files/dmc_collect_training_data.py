@@ -36,7 +36,7 @@ myDMC = dmc.DMC_Sim(sim_name="example_name",
                     wfn_every=7999, #collect a wave function every "wfn_every" time steps
                     desc_wt_steps=500, #number of time steps you allow for descendant weighting per wave function
                     atoms=atoms,
-                    delta_t=10, #the size of the time step in atomic units
+                    delta_t=1, #the size of the time step in atomic units
                     potential=tri_pot,
                     start_structures=init_cds, #can provide a single geometry, or an ensemble of geometries
                     DEBUG_save_training_every=5,
