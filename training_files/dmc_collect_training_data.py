@@ -23,7 +23,8 @@ tri_pot = pm.Potential(potential_function=pot_func,
 atoms = ['O','H','H'] * 3
 
 # Factors by which to multiply at each time step in the sim
-factors = np.array([1]*4000 + [0.99972538464]*3999)
+# The first time step is never scaled, so 3999 1s instead of 4000
+factors = np.array([1]*3999 + [0.99972538464]*4000)
 
 
 myDMC = dmc.DMC_Sim(sim_name="example_name",
